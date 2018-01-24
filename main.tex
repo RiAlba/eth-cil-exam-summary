@@ -188,7 +188,7 @@ $\mathbf{X} \in \mathbb{R}^{D \times N}$. $N$ observations, $K$ properties. Targ
 \end{inparaenum}
 
 \subsection{Low-Rank approximation}
-Using only $K$ largest eigenvalues and corresponding eigenvectors. $\tilde{\mathbf{A}}_{i, j} = \sum_{k}^K \mathbf{U}_{i, k} \mathbf{D}_{k,k} \mathbf{V}_{j, k} = \mathbf{U}_{i, k} \mathbf{D}_{k,k} (\mathbf{V}^\top)_{k, j}$.\\
+Using only $K$ largest eigenvalues and corresponding eigenvectors. $\tilde{\mathbf{A}}_{i, j} = \sum_{k}^K \mathbf{U}_{i, k} \mathbf{D}_{k,k} \mathbf{V}_{j, k} = \sum_{k}^K \mathbf{U}_{i, k} \mathbf{D}_{k,k} (\mathbf{V}^\top)_{k, j}$.\\
 	$\|\mathbf{A} - \tilde{\mathbf{A}}\|_F = \sqrt{\sum_{i > K} \sigma_i^2} = \sqrt{\sum_{i > K} \lambda_i}$,
 	$\|\mathbf{A} - \tilde{\mathbf{A}}\|_2 = \sigma_{K+1}$
 
@@ -200,16 +200,8 @@ Using only $K$ largest eigenvalues and corresponding eigenvectors. $\tilde{\math
 	\item Initiate: choose $K$ centroids $\mathbf{U} = [\mathbf{u}_1, \ldots, \mathbf{u}_K]$ (usually u.a.r.)
 	\item Assign data points to clusters. $k^\star(\mathbf{x}_n) = \argmin_k \{ \|\mathbf{x}_n - \mathbf{u}_k\|_2 \}$ returns cluster $k^\star$, whose centroid $\mathbf{u}_{k^\star}$ is closest to data point $\mathbf{x}_n$. Set $\mathbf{z}_{k^\star,n} = 1$, and for $ l \neq k^\star~ \mathbf{z}_{l,n}=0$.
 	\item Update centroids: $\mathbf{u}_k = \frac{\sum_{n=1}^N z_{k,n} \mathbf{x}_n}{\sum_{n=1}^N z_{k,n}}$.
-	\item Repeat from step 2, stops if $\|\mathbf{Z} - \mathbf{Z}^\text{new}\|_0 = \|\mathbf{Z} - \mathbf{Z}^\text{new}\|^2_F = 0$.
+	\item Repeat from step 2, stops if termination condition is met (e.g. $\mathbf{Z} == \mathbf{Z}^\text{new}$).
 \end{inparaenum}
-
-\subsection{Clustering Stability}
-\begin{inparaitem}[\color{red}\textbullet]
-  \item dist. between clust. (same data): $d(C,C') := \min_\Pi \frac{1}{2}\|Z-\Pi(Z')\|^2_F$ , $\Pi(Z
-')$ = row perm. of $Z'$
-  \item arbitrary sets $\mathbf{X},\mathbf{X'}$ of size $N,N'$: $r := \frac{1}{N'} \min_{\Pi} \{ \sum_{n=1}^{N'} \mathbb{I}_{\{\Pi(\phi(x'_n)) \neq z'_n\} } \}$ ($\phi$: multi-class classifier trained on ($\mathbf{X},\mathbf{Z}$))
-  \item for $K$ clusters: $\text{stability} := 1 - \frac{r}{r_{rand}}$ (1 good, 0 bad), rand. clust. of equal size: $r_{rand} = \frac{K-1}{K}$.
-\end{inparaitem}
 
 \section{Gaussian Mixture Models (GMM)}
 For GMM let $\boldsymbol{\theta}_k = (\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)$; $p_{\theta_k}(\mathbf{x}) = \mathcal{N}(\mathbf{x} | \boldsymbol{\mu}_k, \Sigma_k)$
@@ -227,7 +219,8 @@ For GMM let $\boldsymbol{\theta}_k = (\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)
 	\item Initialize $\boldsymbol{\pi}_k^{(0)}, \boldsymbol{\mu}_k^{(0)}, \boldsymbol{\Sigma}_k^{(0)}$ for $k = 1, \ldots, K$ and $t=1$.
 	\item E-Step: Pr$[z_{k,n} = 1 | \mathbf{x}_n] = q_{k, n} = \frac{\boldsymbol{\pi}_k^{(t-1)} \mathcal{N}(\mathbf{x}_n | \boldsymbol{\mu}_k^{(t-1)}, \boldsymbol{\Sigma}_k^{(t-1)})}{\sum_{j=1}^K \boldsymbol{\pi}_j^{(t-1)} \mathcal{N}(\mathbf{x}_n | \boldsymbol{\mu}_j^{(t-1)}, \boldsymbol{\Sigma}_j^{(t-1)})}$
 	\item M-Step: $\boldsymbol{\mu}_k^{(t)} := \frac{\sum_{n=1}^N q_{k,n} \mathbf{x}_n}{\sum_{n=1}^N q_{k,n}}$\hspace{20pt} \& \hspace{20pt} $\boldsymbol{\pi}_k^{(t)} := \frac{1}{N} \sum_{n=1}^N q_{k,n}$ \hspace{20pt} \& \hspace{20pt} $\Sigma_k^{(t)} = \frac{\sum_{n=1}^N q_{k, n} (\mathbf{x}_n - \boldsymbol{\mu}_k^{(t)})(\mathbf{x}_n - \boldsymbol{\mu}_k^{(t)})^\top}{\sum_{n=1}^N q_{k,n}}$
-	\item Repeat from (2.) with $t = t + 1$ if not $\| \log p(\mathbf{X} | \boldsymbol{\pi}^{(t)}, \boldsymbol{\mu}^{(t)}, \boldsymbol{\Sigma}^{(t)}) - \log p(\mathbf{X} | \boldsymbol{\pi}^{(t-1)}, \boldsymbol{\mu}^{(t-1)}, \boldsymbol{\Sigma}^{(t-1)}) \| < \epsilon$
+	\item If termination condition (e.g. $\| \log p(\mathbf{X} | \boldsymbol{\theta}^{(t)}) - \log p(\mathbf{X} | \boldsymbol{\theta}^{(t-1)}) \| < \epsilon$) is not met, $t=t+1$ and go to step
+	2.
 \end{compactenum}
 
 \subsection{Model Order Selection (AIC / BIC for GMM)}
@@ -271,18 +264,18 @@ unnormalized distribution $\rightarrow$ two-sided loss function
 
 \subsection{EM for pLSA:}
 \begin{compactenum}[\color{red} 1.]
-  \item Log-Likelihood: $L(\mathbf{U}, \mathbf{V}) = \sum_{i,j} x_{i,j}\log p(w_j|d_i) = \break \sum_{(i,j) \in X} \log \sum_{z=1}^K p(w_j|z)p(z|d_i)$
-	\item E-Step (optimal q): $q_{zij} = \frac{p(w_j|z)p(z|d_i)}{\sum_{k=1}^K p(w_j|k)p(k|d_i)} := \frac{v_{zj}u_{zi}}{\sum_{k=1}^K v_{kj}u_{ki}}$
-	\item M-Steps: $p(z|d_i) = \frac{\sum_j x_{ij}q_{zij}}{\sum_j x_{ij}}\hspace{10pt}\&\hspace{10pt} p(w_j|z) = \frac{\sum_i x_{ij}q_{zij}}{\sum_{i,l}x_{il}q_{zil}}$
+  \item Log-Likelihood: $L(\mathbf{U}, \mathbf{V}) = \sum_{i,j} x_{i,j}\log p(w_j|d_i) = \break \sum_{(i,j) \in X} \log \sum_{z=1}^K p(w_j|z)p(z|d_i) =  \sum_{(i,j) \in X} \log \sum_{z=1}^K v_{zj}u_{zi} \break$ s.t. $\sum_{z} u_{z,i} = 1 \hspace{10pt}\&\hspace{10pt} \sum_{j} v_{z,j} = 1$
+	\item E-Step (optimal q): $q_{zij} = \frac{p(w_j|z)p(z|d_i)}{\sum_{k=1}^K p(w_j|k)p(k|d_i)} = \frac{v_{zj}u_{zi}}{\sum_{k=1}^K v_{kj}u_{ki}}$
+	\item M-Steps: $u_{zi} = p(z|d_i) = \frac{\sum_j x_{ij}q_{zij}}{\sum_j x_{ij}}\hspace{10pt}\&\hspace{10pt} v_{zj} = p(w_j|z) = \frac{\sum_i x_{ij}q_{zij}}{\sum_{i,l}x_{il}q_{zil}}$
 \end{compactenum}
 
-\subsection{NMF Algorithm for quadratic cost function}
+\subsection{Projected ALS for quadratic cost function}
 \begin{inparaitem}[\color{red}\textbullet]
 	\item $\mathbf{X} \in \mathbb{Z}^{N \times M}_{\geq 0}$
 	\item NMF: $\mathbf{X} \approx \mathbf{U^\top V}, x_{ij} = \sum_z u_{zi}v_{zj} = \langle \mathbf{u}_i, \mathbf{v}_j \rangle$
 \end{inparaitem}
 
-$\min_{\mathbf{U}, \mathbf{V}} J(\mathbf{U}, \mathbf{V}) = \frac{1}{2} \|\mathbf{X} - \mathbf{U}^\top\mathbf{V}\|_F^2$ s.t. $\forall i,j,z~u_{zi},v_{zj} \geq 0 $
+$\min_{\mathbf{U}, \mathbf{V}} J(\mathbf{U}, \mathbf{V}) = \frac{1}{2} \|\mathbf{X} - \mathbf{U}^\top\mathbf{V}\|_F^2$ s.t. $u_{zi},v_{zj} \geq 0~(\forall i,j,z)$
 
 \begin{inparaenum}[\color{red} 1.]
 	\item init: $\mathbf{U}, \mathbf{V} = rand()$
@@ -293,11 +286,17 @@ $\min_{\mathbf{U}, \mathbf{V}} J(\mathbf{U}, \mathbf{V}) = \frac{1}{2} \|\mathbf
 	\item project $v_{zj} = \max \{ 0, v_{zj} \}$
 \end{inparaenum}
 
-\section{Convolutional Neural Networks}
-\textbf{Neurons}: $F_\sigma(\mathbf{x};\mathbf{w}) = \sigma(w_0 + \sum_{i=1}^M{x_iw_i})$. \textbf{Output}: linear regression; $\mathbf{y} = \mathbf{W}^L\mathbf{x}^{L-1}$, binary classification; $y_1 = \text{P}[Y=1|\mathbf{x}] = \frac{1}{1 + \exp[-\langle \mathbf{w}_1^L,\mathbf{x}^{L-1}\rangle]}$, multiclass; $y_k = \text{P}[Y=k|\mathbf{x}]= \frac{\exp[\langle \mathbf{w}_k^L,\mathbf{x}^{L-1}\rangle]}{\sum_{m=1}^{K}{\exp[\langle \mathbf{w}_m^L, \mathbf{x}^{L-1}\rangle]}}$. \textbf{Loss function} $l(y, \hat{y})$: squared loss; $\frac{1}{2}(y - \hat{y})^2$, cross-entropy loss; $-y \log \hat{y} - (1-y)\log(1-\hat{y})$.
+\section{Neural Networks}
+\textbf{Neurons}: $F_\sigma(\mathbf{x};\mathbf{w}) = \sigma(w_0 + \sum_{i=1}^M{x_iw_i})$. \textbf{Output}: linear; $\mathbf{y} = \mathbf{W}^L\mathbf{x}^{L-1}$, logistic; $y_1 = \text{P}[Y=1|\mathbf{x}] = \frac{1}{1 + \exp[-\langle \mathbf{w}_1^L,\mathbf{x}^{L-1}\rangle]}$, soft-max; $y_k = \text{P}[Y=k|\mathbf{x}]= \frac{\exp[\langle \mathbf{w}_k^L,\mathbf{x}^{L-1}\rangle]}{\sum_{m=1}^{K}{\exp[\langle \mathbf{w}_m^L, \mathbf{x}^{L-1}\rangle]}}$. \textbf{Loss function} $l(y, \hat{y})$: squared loss; $\frac{1}{2}(y - \hat{y})^2$, cross-entropy loss; $-y \log \hat{y} - (1-y)\log(1-\hat{y})$.  \textbf{Backpropagation} $J_{ij}^l=\frac{\partial x_i^l}{\partial x_j^{l-1}}=w_{ij}\sigma'(w_i^Tx)$;$\frac{\partial x^l}{\partial x^{l-n}} = J^lJ^{l-1} \dotsm J^{l-n+1}$; $ \nabla_{x^l} l(y, \hat{y})^T = \nabla_{y} l(y, \hat{y})^TJ^lJ^{l-1} \dotsm J^{l-n+1}$
+\break$ \frac{\partial l(y, \hat{y})}{\partial w_{ij}^l} = \frac{\partial l(y, \hat{y})}{\partial x_{i}^l} \frac{\partial x_i^l}{\partial w_{ij}^l}$; $\frac{\partial x_i^l}{\partial w_{ij}^l} = \sigma'({w_i^l}^Tx^{l-1})x_j^{l-1}$
 
-\subsection{Neural Networks for Images}
-Translation invariance of images $\rightarrow$ neurons compute same fct, shift invariant filters; weights defined as filter masks, e.g. convolution: $F_{n,m}(\mathbf{x};\mathbf{w}) = \sigma(b + \sum_{k=-2}^2\sum_{l=-2}^{2}{w_{k,l}x_{n+k,m+l}})$. To reduce dimension of convolution, use \{max, avg\}-pooling
+\subsection{Convolutional Neural Networks for Images}
+$\mathbf{(n,m)}$: pixel coords. \hspace{5pt} $\mathbf{x}$: image \hspace{5pt} $\mathbf{w}$: weights \hspace{5pt} $\mathbf{c}$: channels
+\begin{compactdesc}
+\item[Convolution]: $F_{n,m}(\mathbf{x};\mathbf{w}) = \sigma(\sum_{1}^c{(b + \sum_{k,l=-2}^2{w_{k,l}x_{n+k,m+l}})})$ 
+\item[Act. func.] $ReLU(F(\mathbf{x};\mathbf{w}))_{n,m} = max(0, F_{n,m}(\mathbf{x};\mathbf{w}))$
+\item[Pooling]: $max_{-2 < i,j <2}~(ReLU(F(\mathbf{x};\mathbf{w}))_{n+i,m+j})$
+\end{compactdesc}
 
 \section{Optimization}
 
@@ -306,8 +305,8 @@ Translation invariance of images $\rightarrow$ neurons compute same fct, shift i
 	\item init: $\mathbf{x}^{(0)} \in \mathbb{R}^D$
 	\item for $t = 0 \ \text{to} \ \mathit{maxIter}$:
 	\item sample u.a.r. $d \sim \{1, \ldots, D\}$
-	\item $u^\star = \argmin_{u \in \mathbb{R}} f(x_1^{(t)}, .., x_{d-1}^{(t)}, u, x_{d+1}^{(t)}, .., x_D^{(t)})$
-	\item $\mathbf{x}_d^{(t+1)} = u^\star$ and $\mathbf{x}_i^{(t+1)} = \mathbf{x}_i^{(t)}$ for $i \neq d$
+	\item $u^\star = \argmin_{u \in \mathbb{R}} f(x_1^{t}, .., x_{d-1}^{t}, u, x_{d+1}^{t}, .., x_D^{t})$
+	\item $\mathbf{x}_d^{t+1} = u^\star$ and $\mathbf{x}_i^{t+1} = \mathbf{x}_i^{t}$ for $i \neq d$
 \end{inparaenum}
 
 \subsection{Gradient Descent (or Deepest Descent)}
@@ -329,36 +328,34 @@ Assume \textbf{Additive Objective}; $f(x) = \frac{1}{N}\sum_{n=1}^{N}f_n(x)$
 \subsection{Projected Gradient Descent (Constrained Opt.)}
 minimize $f(x)$, $x \in Q$ (constraint).
 \textbf{Project} $x$ onto $Q$: $P_Q(\mathbf{x}) = \argmin_{y \in Q} \|\mathbf{y} - \mathbf{x}\|$,
-\textbf{Projected Gradient Update}: $\mathbf{x}^{(t+1)} = P_Q[\mathbf{x}^{(t)} - \gamma \nabla f(\mathbf{x}^{(t)})]$,
-$\mathbf{x}^{(t+1)}$ is unique if $Q$ convex.
+projection is unique if $Q$ convex.
 
 \subsection{Lagrangian Multipliers}
-Minimize  $f(\mathbf{x})$ s.t. $g_i(\mathbf{x}) \leq 0,\ i = 1, .., m$ (\textbf{inequality constr.}) and $h_i(\mathbf{x}) = \mathbf{a}_i^\top \mathbf{x} - b_i = 0,\ i = 1, .., p$ (\textbf{equality constraint})
+Minimize  $f(\mathbf{x})$ s.t. $g_i(\mathbf{x}) \leq 0,\ i = 1, .., m$ (\textbf{inequality constr.}) and $h_j(\mathbf{x}) = 0,\ j = 1, .., p$ (\textbf{equality constraint})
 \begin{compactdesc}
 	\item[Lagrangian:] $L(\mathbf{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) := f(\mathbf{x}) + \sum_{i=1}^m \lambda_i g_i(\mathbf{x}) + \sum_{i=1}^p \nu_i h_i(\mathbf{x})$
 	\item[Dual function:] $D(\boldsymbol{\lambda}, \boldsymbol{\nu}) := \inf_{\mathbf{x}} L(\mathbf{x}, \boldsymbol{\lambda}, \boldsymbol{\nu}) \in \mathbb{R}$
-	\item[Dual Problem:] $\max_{\boldsymbol{\lambda}, \boldsymbol{\nu}} D(\boldsymbol{\lambda}, \boldsymbol{\nu})$ s.t. $\boldsymbol{\lambda} \geq \mathbf{0}$. Note: $\max_{\boldsymbol{\lambda}, \boldsymbol{\nu}} D(\boldsymbol{\lambda}, \boldsymbol{\nu}) \le \min_\mathbf{x}{f(\mathbf{x})}$, equality if $dom\ f$ and $f$ convex
+	\item[Dual Problem:] $\max_{\boldsymbol{\lambda}, \boldsymbol{\nu}} D(\boldsymbol{\lambda}, \boldsymbol{\nu})$ s.t. $\boldsymbol{\lambda} \geq \mathbf{0}$
 \end{compactdesc}
 
 \subsection{Convex Optimization}
-$f : \mathbb{R}^D \rightarrow \mathbb{R}$ is convex, if $dom\ f$ is a convex set, and if $\forall \mathbf{x}, \mathbf{y} \in dom\ f$, and for $0 \leq \alpha \leq 1$: $f(\alpha \mathbf{x} + (1 - \alpha)\mathbf{y}) \leq \alpha f(\mathbf{x}) + (1-\alpha)f(\mathbf{y})$. local=global min, \textbf{Convergence}: $f(\mathbf{x}^{(t)}) - f(\mathbf{x}^*) \le \frac{c}{t}$.
-\textbf{Subgradient} $g \in \mathbb{R}^D$ of $f$ at $\mathbf{x}$: $f(\mathbf{y}) \geq f(\mathbf{x}) + g^\top(\mathbf{y}-\mathbf{x}) \ \forall \mathbf{y}$
+$f : \mathbb{R}^D \rightarrow \mathbb{R}$ is convex, if $dom\ f$ is a convex set, and if $\forall \mathbf{x}, \mathbf{y} \in dom\ f$, and for $0 \leq \alpha \leq 1$: $f(\alpha \mathbf{x} + (1 - \alpha)\mathbf{y}) \leq \alpha f(\mathbf{x}) + (1-\alpha)f(\mathbf{y})$. local=global min, \textbf{Convergence}: all descent methods converge; $f(\mathbf{x}^{(t)}) - f(\mathbf{x}^*) \le \frac{c}{t}$.
 
 \section{Sparse Coding}
 
 \subsection{Orthogonal Basis}
-For $\mathbf{x}$ and o.n.b. $\mathbf{U}$ compute $\mathbf{z} = \mathbf{U}^\top \mathbf{x} $. Approx $ \mathbf{\hat{x}} = \mathbf{U\hat{z}}$, $\hat{z}_i = z_i$ if $ \lvert z_i \rvert > \epsilon$ else 0.
-Reconstruction Error $\|\mathbf{x}-\mathbf{\hat{x}}\|^2 = \sum_{d\notin\sigma}\langle\mathbf{x},\mathbf{u}_d\rangle ^2$.
-Choice of base depends on signal. Fourier for global, wavelet for local support. PCA basis optimal for given $\Sigma$.
+For $\mathbf{x}$ and orthogonal $\mathbf{U}$ compute $\mathbf{z} = \mathbf{U}^\top \mathbf{x} $. Approx $ \mathbf{\hat{x}} = \mathbf{U\hat{z}}$, $\hat{z}_i = z_i$ if $ \lvert z_i \rvert > \epsilon$ else 0.
+\textbf{Reconstruction Error}: $\|\mathbf{x}-\mathbf{\hat{x}}\|^2$ and sparsity of $\hat{z}$.
+\textbf{Choice of basis depends on signal}: fourier for global, wavelet for local and PCA basis for given $\Sigma$.
 
 \subsection{Overcomplete Basis}
-$\mathbf{U} \in \mathbb{R}^{D \times  L}$ for \# atoms $ = L > D = \mathsf{dim}\text{(data)}$. Decoding involved $\rightarrow$ add constraint $\mathbf{z}^\star \in \argmin_\mathbf{z} \lVert \mathbf{z} \rVert_0$ s.t. $\mathbf{x} = \mathbf{Uz}$. NP-hard $\rightarrow$ approximate with 1-norm (convex) or with MP.
+$\mathbf{U} \in \mathbb{R}^{D \times  L}$ for \# atoms $ = L > D = \mathsf{dim}\text{(data)}$. Can't invert $U^T$, decoding $\rightarrow$ add constraint $\mathbf{z}^\star \in \argmin_\mathbf{z} \lVert \mathbf{z} \rVert_0$ s.t. $\mathbf{x} = \mathbf{Uz}$. NP-hard $\rightarrow$ approximate with 1-norm (convex) or with M. Pursuit.
 
 \textbf{Coherence}
 \begin{inparaitem}[\color{red}\textbullet]
 	\item $m(\mathbf{U}) = \max_{i,j:\, i \neq j} | \mathbf{u}_i^\top \mathbf{u}_j |$
 	\item $m(\mathbf{B}) = 0$ if $\mathbf{B}$ orthogonal matrix
-	\item $m([\mathbf{B}, \mathbf{u}]) \geq \frac{1}{\sqrt{D}}$ if atom $\mathbf{u}$ is added to orthogonal basis $\mathbf{B}$ (o.n.b. = orthonormal base)
+	\item $m([\mathbf{B}, \mathbf{u}]) \geq \frac{1}{\sqrt{D}}$ if atom $\mathbf{u}$ is added to orthogonal basis $\mathbf{B}$.
 \end{inparaitem}
 
 \textbf{Matching Pursuit (MP)}
@@ -379,7 +376,7 @@ Objective: $\mathbf{z}^\star \in \argmin_{\mathbf{z}} \|\mathbf{x} - \mathbf{Uz}
   \item Reconstruct $\mathbf{x} \in \mathbb{R}^D$ from $\mathbf{y}$; find $\mathbf{z}^\star \in \argmin_{\mathbf{z}}\|\mathbf{z}\|_0$, s.t. $\mathbf{y} = \mathbf{\theta z}$ (e.g. with MP). Given $\mathbf{z}$, reconstruct $\mathbf{x}$ via $\mathbf{x} = \mathbf{Uz}$
 \end{inparaitem}
 
-\subsection{Dictionary Learning}
+\subsection{Dictionary Learning (Find U and Z)}
 Adapt the dictionary to signal characteristics. Objective: $(\mathbf{U}^\star, \mathbf{Z}^\star) \in \argmin_\mathbf{U,Z} \| \mathbf{X} - \mathbf{U} \cdot \mathbf{Z} \|_F^2$ not jointly convex but convex in 1 argument.
 
 \textbf{Matrix Factorization by Iter Greedy Minimization}
@@ -406,9 +403,10 @@ $\boldsymbol{\lambda}^{t+1} := \boldsymbol{\lambda}^t + \eta^t \left( \sum_{i=1}
 $\min_{\mathbf{x}_1, \mathbf{x}_2} f_1(\mathbf{x}_1) + f_2(\mathbf{x}_2)$ s. t. $\mathbf{A}_1 \mathbf{x}_1 + \mathbf{A}_2 \mathbf{x}_2 = \mathbf{b}$, $f_1, f_2$ convex
 \begin{inparaitem}[\color{red}\textbullet]
 	\item Augmented Lagrangian: $L_p(\mathbf{x}_1, \mathbf{x}_2, \boldsymbol{\nu}) = f_1(\mathbf{x}_1) + f_2(\mathbf{x}_2) + \boldsymbol{\nu}^\top (\mathbf{A}_1 \mathbf{x}_1 + \mathbf{A}_2 \mathbf{x}_2 - \mathbf{b}) + \frac{p}{2}\| \mathbf{A}_1 \mathbf{x}_1 + \mathbf{A}_2 \mathbf{x}_2 - \mathbf{b} \|_2^2$
-	\item ADMM: $\mathbf{x}_1^{(t+1)} := \argmin_{\mathbf{x}_1} L_p(\mathbf{x}_1, \mathbf{x}_2^{(t)}, \boldsymbol{\nu}^{(t)})$, $\mathbf{x}_2^{(t+1)} := \argmin_{\mathbf{x}_2} L_p(\mathbf{x}_1^{(t+1)}, \mathbf{x}_2, \boldsymbol{\nu}^{(t)})$, $\boldsymbol{\nu}^{(t+1)} := \boldsymbol{\nu}^{(t)} + p(\mathbf{A}_1 \mathbf{x}_1^{(t+1)} + \mathbf{A}_2 \mathbf{x}_2^{(t+1)} - \mathbf{b})$
-  \item ADMM for RPCA: $f_1(\mathbf{L}) = \|\mathbf{L}\|_\star$, $f_2(\mathbf{S}) = \lambda \| \mathbf{S} \|_1$, $\mathbf{A}_1 \mathbf{x}_1 + \mathbf{A}_2 \mathbf{x}_2 = \mathbf{b} \text{ becomes } \mathbf{L} + \mathbf{S} = \mathbf{X}$, therefore $L_p(\mathbf{L}, \mathbf{S}, \boldsymbol{\nu}) = \|\mathbf{L}\|_* + \nu \|\mathbf{S}\|_1 + \left< \nu, \mathrm{vec}(\mathbf{L}+\mathbf{S}-\mathbf{X}) \right> + \frac{P}{2} \| \mathbf{L}+ \mathbf{S} - \mathbf{X} \|_F^2$
-  %updates: $\mathbf{L}^{t+1} = \mathcal{D}_{\rho^{-1}}(X-S-\rho^{-1}\text{mat}(\lambda))$
+  \item ADMM for RPCA: $f_1(\mathbf{L}) = \|\mathbf{L}\|_\star$, $f_2(\mathbf{S}) = \lambda \| \mathbf{S} \|_1$, $\mathbf{A}_1 \mathbf{x}_1 + \mathbf{A}_2 \mathbf{x}_2 = \mathbf{b} \text{ becomes } \mathbf{L} + \mathbf{S} = \mathbf{X}$, therefore $L_p(\mathbf{L}, \mathbf{S}, \boldsymbol{\nu}) = \|\mathbf{L}\|_* + \nu \|\mathbf{S}\|_1 + \left< \nu, \mathrm{vec}(\mathbf{L}+\mathbf{S}-\mathbf{X}) \right> + \frac{P}{2} \| \mathbf{L}+ \mathbf{S} - \mathbf{X} \|_F^2$;
+  \textbf{Updates}: $\mathbf{L}^{t+1} = argmin_L~L_p(L,S,\lambda) =  \mathcal{D}_{\rho^{-1}}(X-S-\rho^{-1}\text{mat}(\lambda))$; $\mathbf{S}^{t+1} = argmin_S~L_p(L,S,\lambda) =  \mathcal{S}_{\mu\rho^{-1}}(X-S-\rho^{-1}\text{mat}(\lambda))$; $\boldsymbol{\lambda}^{t+1} = \boldsymbol{\lambda}^t + \rho vec(L^{t+1} + S^{t+1} - X)$ \break
+  $\mathcal{D}_\tau = U\mathcal{S}_t(\Sigma)V^T$;
+  $\mathcal{S}_\tau(X) = sgn(x)max(x - \tau, 0)$
 \end{inparaitem}
 
 \raggedcolumns

@@ -92,18 +92,15 @@
 	\end{inparaitem}
 	\item[Outer Product:] $\mathbf{u} \mathbf{v}^\top$, $(\mathbf{u} \mathbf{v}^\top)_{i, j} = \mathbf{u}_i \mathbf{v}_j$
 	\item[Transpose:] $(\mathbf{A}^\top)^{-1} = (\mathbf{A}^{-1})^\top$
-	\item[Gram-Schmidt:] $\{\mathbf{w}_i\}_i$ non-orthogonal basis. $\mathbf{v}_n = \mathbf{w}_n - \sum_{i=1}^{n-1} \frac{\langle \mathbf{v}_i, \mathbf{w}_n \rangle}{\langle \mathbf{v}_i, \mathbf{v}_i \rangle} \mathbf{v}_i$ results in $\{\mathbf{v}_i\}_i$ an orthogonal basis
 \end{compactdesc}
 
 \subsection{Norms}
 \begin{inparaitem}[\color{red}\textbullet]
 	\item $\|\mathbf{x}\|_0 = |\{i | x_i \neq 0\}|$
-	\item $\|\mathbf{x}\|_2 = \sqrt{\sum_{i=1}^{N} \mathbf{x}_i^2} = \sqrt{\langle \mathbf{x}, \mathbf{x} \rangle}$
-	\item $\|\mathbf{x}\|_p = \left( \sum_{i=1}^{N} |x_i|^p \right)^{\frac{1}{p}}$
-	\item $\mathbf{M} \in \mathbb{R}^{m \times n}$,\ $\|\mathbf{M}\|_F =\allowbreak \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n}\mathbf{m}_{i,j}^2} =\allowbreak \sqrt{\sum_{i=1}^{\min\{m, n\}} \sigma_i^2}$
-  \item $\|\mathbf{M}\|_1 = \sum_{i,j} | m_{i,j}|$
+	\item $\|\mathbf{x}\|_2 = \sqrt{\sum_{i=1}^{N} \mathbf{x}_i^2} = \sqrt{\langle \mathbf{x}, \mathbf{x} \rangle}$ \break
+	\item $\mathbf{M} \in \mathbb{R}^{m \times n}$, $\|\mathbf{M}\|_1 = \sum_{i,j} | m_{i,j}|$
 	\item $\|\mathbf{M}\|_2 = \sigma_{\text{max}}(\mathbf{M})$
-	\item $\|\mathbf{M}\|_p = \max_{\mathbf{v} \neq 0} \frac{\|\mathbf{M}\mathbf{v}\|_p}{\|\mathbf{v}\|_p}$
+	\item $\|\mathbf{M}\|_F =\allowbreak \sqrt{\sum_{i=1}^{m} \sum_{j=1}^{n}\mathbf{m}_{i,j}^2} =\allowbreak \sqrt{\sum_{i=1}^{\min\{m, n\}} \sigma_i^2} = \sqrt{trace(MM^T)}$
 	\item $\|\mathbf{M}\|_\star = \sum_{i=1}^{\min(m, n)} \sigma_i$
 \end{inparaitem}
 
@@ -119,9 +116,6 @@
   \item $\frac{\partial}{\partial \mathbf{x}}(\|\mathbf{x}\|^2_2) = \frac{\partial}{\partial \mathbf{x}} (\mathbf{x}^\top \mathbf{x}) = 2\mathbf{x}$
   \item $\frac{\partial}{\partial \mathbf{X}}(\|\mathbf{X}\|_F^2) = 2\mathbf{X}$
 \end{inparaitem}
-
-%\subsection{Basis Transformation}
-%$\mathbf{V}, \mathbf{W}$ are two basis matrices (each column is a basis vector, invertible). Representing $\mathbf{x}$ in basis $\mathbf{V}$ by \emph{coordinate vector} $\mathbf{a}$: $\mathbf{x} = \mathbf{V} \mathbf{a} \Rightarrow \mathbf{a} = \mathbf{V}^{-1} \mathbf{x}$. Knowing $\mathbf{a}$ representing $\mathbf{x}$ in $\mathbf{V}$ we can calculate coordinate vector $\mathbf{b}$ representing $\mathbf{x}$ in $\mathbf{W}$ with: $\mathbf{x} = \mathbf{W}^{-1} \mathbf{b} = \mathbf{V}^{-1} \mathbf{a} \Rightarrow \mathbf{b} = \mathbf{W} \mathbf{V}^{-1} \mathbf{a}$.
 
 \subsection{Eigenvalue / -vectors}
 Eigenvalue Problem: $\mathbf{Ax} = \lambda \mathbf{x}$
@@ -141,13 +135,14 @@ Eigenvalue Problem: $\mathbf{Ax} = \lambda \mathbf{x}$
 
 \subsection{Probability / Statistics}
 \begin{inparaitem}[\color{red}\textbullet]
-	\item $P(x) := Pr[X = x] := \sum_{y \in Y} P(x, y)$
-	\item $P(x|y) := Pr[X = x | Y = y] := \frac{P(x,y)}{P(y)},\quad \text{if } P(y) > 0$
-	\item $\forall y \in Y: \sum_{x \in X} P(x|y) = 1$ (property for any fixed $y$)
+	\item Marginal dist: $P(x) := Pr[X = x] := \sum_{y \in Y} P(x, y)$
+	\item Conditional dist: $P(x|y) := Pr[X = x | Y = y] := \frac{P(x,y)}{P(y)},\quad \text{if } P(y) > 0$
+	\item $\forall y \in Y: \sum_{x \in X} P(x|y) = 1$
 	\item $P(x, y) = P(x|y) P(y)$
-	\item $P(x|y) = \frac{P(y|x)P(x)}{P(y)}$ (Bayes' rule)
-	\item $P(x|y) = P(x) \Leftrightarrow P(y|x) = P(y)$ (iff $X$, $Y$ independent)
-	\item $P(x_1, \ldots, x_n) = \prod_{i=1}^n P(x_i)$ (iff IID)
+	\item \textbf{Bayes' rule}: $P(x|y) = \frac{P(y|x)P(x)}{P(y)}$
+	\item $P(x|y) = P(x)$ (if $X$, $Y$ independent)
+	\item $P(x_1, \ldots, x_n) = P(x_1 \cap \ldots \cap x_n) = \prod_{i=1}^n P(x_i)$ (if IID)
+	\item $P(x_1 \cup x_2) = P(x_1) + P(x_2) - P(x_1,x_2)$
 \end{inparaitem}
 
 
@@ -207,7 +202,7 @@ Using only $K$ largest eigenvalues and corresponding eigenvectors. $\tilde{\math
 For GMM let $\boldsymbol{\theta}_k = (\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)$; $p_{\theta_k}(\mathbf{x}) = \mathcal{N}(\mathbf{x} | \boldsymbol{\mu}_k, \Sigma_k)$
 \begin{compactdesc}
 	\item[Mixture Models:] $p_\theta(\mathbf{x}) = \sum_{k=1}^K \pi_k p_{\theta_k}(\mathbf{x})$
-	\item[Assignment variable (generative model):] $\\z_k \in \{0, 1\}$, $\sum_{k=1}^K z_k = 1$, $\operatorname{Pr}(z_k = 1) = \pi_k \Leftrightarrow p(\mathbf{z}) = \prod_{k=1}^K \pi_k^{z_k}$
+	\item[Latent variable (generative model):] $\\z_k \in \{0, 1\}$, $\sum_{k=1}^K z_k = 1$, $\operatorname{Pr}(z_k = 1) = \pi_k \Leftrightarrow p(\mathbf{z}) = \prod_{k=1}^K \pi_k^{z_k}$
 	\item[Complete data distribution:] $p_\theta(\mathbf{x}, \mathbf{z}) = \prod_{k=1}^K \left( \boldsymbol{\pi}_k p_{\theta_k}(\mathbf{x})\right)^{z_k}$
 	\item[Posterior Probabilities:] $\\\operatorname{Pr}(z_k = 1 | \mathbf{x}) = \frac{\operatorname{Pr}(z_k = 1) p(\mathbf{x} | z_k = 1)}{\sum_{l=1}^K \operatorname{Pr}(z_l = 1) p(\mathbf{x} | z_l = 1)} = \frac{\boldsymbol{\pi}_k p_{\theta_k}(\mathbf{x})}{\sum_{l=1}^K \boldsymbol{\pi}_l p_{\theta_l}(\mathbf{x})}$
 	\item[Likelihood of observed data $\mathbf{X}$:] $p_\theta(\mathbf{X}) = \prod_{n=1}^N p_\theta(\mathbf{x}_n) = \prod_{n=1}^N \left(\sum_{k=1}^K \pi_k p_{\theta_k}(\mathbf{x}_n)\right)$
@@ -229,7 +224,7 @@ Trade-off between data fit (i.e. likelihood $p(\mathbf{X} | \theta)$) and comple
 	\item \textbf{Akaike Information Criterion}: $\operatorname{AIC}(\theta | \mathbf{X}) = -\log p_\theta(\mathbf{X}) + \kappa(\theta)$
 	\item \textbf{Bayesian Information Criterion}: $\operatorname{BIC}(\theta | \mathbf{X}) = -\log p_\theta(\mathbf{X}) + \frac{1}{2} \kappa(\theta) \log N$
 	\item \# of free params: fixed covariance matrix: $\kappa(\theta) = K \cdot D + (K - 1)$ ($K$: \# clusters, $D$: $\mathsf{dim}\text{(data)}=\mathsf{dim}(\mu_i)$, $K-1$: \# free clusters), full covariance matrix: $\kappa(\theta) = K(D + \frac{D(D+1)}{2}) + (K - 1)$.
-	\item Compare AIC/BIC for different $K$ -- the smaller the better. BIC penalizes complexity more.
+	\item BIC penalizes complexity more. The smaller the better. 
 \end{inparaitem}
 
 \section{Word Embeddings}
@@ -240,7 +235,6 @@ Trade-off between data fit (i.e. likelihood $p(\mathbf{X} | \theta)$) and comple
   Modifications:
   \begin{inparaitem}[\color{red}\textbullet]
   \item split vocab in main vocab $V$, context vocab $C$: $\log p_{\theta}(w|w') = \langle  y_{w} , x_{w'} \rangle + b_w$,  word embed. $y_w$, context embed. $x_{w'}$
-  \item use GloVe objective
   \end{inparaitem}
 \end{compactdesc}
 
@@ -259,14 +253,14 @@ unnormalized distribution $\rightarrow$ two-sided loss function
 \begin{compactdesc}
 	\item[Context Model:] $p(w | d) = \sum_{z=1}^K p(w | z) p(z | d)$
 	\item[Conditional independence assumption ($*$):] $p(w|d) = \sum_z p(w,z|d) = \sum_z p(w|d,z)p(z|d) \stackrel{*}{=} \sum_z p(w|z)p(z|d)$
-	\item[Symmetric parameterization:] $p(w, d) = \sum_z p(z)p(w | z) p(d | z)$
+	\item[Symmetr. parameterization:] $p(w, d) = \sum_z p(z)p(w | z) p(d | z)$
 \end{compactdesc}
 
 \subsection{EM for pLSA:}
 \begin{compactenum}[\color{red} 1.]
   \item Log-Likelihood: $L(\mathbf{U}, \mathbf{V}) = \sum_{i,j} x_{i,j}\log p(w_j|d_i) = \break \sum_{(i,j) \in X} \log \sum_{z=1}^K p(w_j|z)p(z|d_i) =  \sum_{(i,j) \in X} \log \sum_{z=1}^K v_{zj}u_{zi} \break$ s.t. $\sum_{z} u_{z,i} = 1 \hspace{10pt}\&\hspace{10pt} \sum_{j} v_{z,j} = 1$
-	\item E-Step (optimal q): $q_{zij} = \frac{p(w_j|z)p(z|d_i)}{\sum_{k=1}^K p(w_j|k)p(k|d_i)} = \frac{v_{zj}u_{zi}}{\sum_{k=1}^K v_{kj}u_{ki}}$
-	\item M-Steps: $u_{zi} = p(z|d_i) = \frac{\sum_j x_{ij}q_{zij}}{\sum_j x_{ij}}\hspace{10pt}\&\hspace{10pt} v_{zj} = p(w_j|z) = \frac{\sum_i x_{ij}q_{zij}}{\sum_{i,l}x_{il}q_{zil}}$
+	\item E-Step: $q_{zij} = \frac{p(w_j|z)p(z|d_i)}{\sum_{k=1}^K p(w_j|k)p(k|d_i)} = \frac{v_{zj}u_{zi}}{\sum_{k=1}^K v_{kj}u_{ki}}$
+	\item M-Step: $u_{zi} = p(z|d_i) = \frac{\sum_j x_{ij}q_{zij}}{\sum_j x_{ij}};~v_{zj} = p(w_j|z) = \frac{\sum_i x_{ij}q_{zij}}{\sum_{i,l}x_{il}q_{zil}}$
 \end{compactenum}
 
 \subsection{Projected ALS for quadratic cost function}
@@ -287,15 +281,15 @@ $\min_{\mathbf{U}, \mathbf{V}} J(\mathbf{U}, \mathbf{V}) = \frac{1}{2} \|\mathbf
 \end{inparaenum}
 
 \section{Neural Networks}
-\textbf{Neurons}: $F_\sigma(\mathbf{x};\mathbf{w}) = \sigma(w_0 + \sum_{i=1}^M{x_iw_i})$. \textbf{Output}: linear; $\mathbf{y} = \mathbf{W}^L\mathbf{x}^{L-1}$, logistic; $y_1 = \text{P}[Y=1|\mathbf{x}] = \frac{1}{1 + \exp[-\langle \mathbf{w}_1^L,\mathbf{x}^{L-1}\rangle]}$, soft-max; $y_k = \text{P}[Y=k|\mathbf{x}]= \frac{\exp[\langle \mathbf{w}_k^L,\mathbf{x}^{L-1}\rangle]}{\sum_{m=1}^{K}{\exp[\langle \mathbf{w}_m^L, \mathbf{x}^{L-1}\rangle]}}$. \textbf{Loss function} $l(y, \hat{y})$: squared loss; $\frac{1}{2}(y - \hat{y})^2$, cross-entropy loss; $-y \log \hat{y} - (1-y)\log(1-\hat{y})$.  \textbf{Backpropagation} $J_{ij}^l=\frac{\partial x_i^l}{\partial x_j^{l-1}}=w_{ij}\sigma'(w_i^Tx)$;$\frac{\partial x^l}{\partial x^{l-n}} = J^lJ^{l-1} \dotsm J^{l-n+1}$; $ \nabla_{x^l} l(y, \hat{y})^T = \nabla_{y} l(y, \hat{y})^TJ^lJ^{l-1} \dotsm J^{l-n+1}$
+\textbf{Neurons}: $F_\sigma(\mathbf{x};\mathbf{w}) = \sigma(w_0 + \sum_{i=1}^M{x_iw_i})$. \textbf{Output}: linear; $\mathbf{y} = \mathbf{W}^L\mathbf{x}^{L-1}$, logistic; $y_1 = \text{P}[Y=1|\mathbf{x}] = \frac{1}{1 + \exp[-\langle \mathbf{w}_1^L,\mathbf{x}^{L-1}\rangle]}$, soft-max; $y_k = \text{P}[Y=k|\mathbf{x}]= \frac{\exp[\langle \mathbf{w}_k^L,\mathbf{x}^{L-1}\rangle]}{\sum_{m=1}^{K}{\exp[\langle \mathbf{w}_m^L, \mathbf{x}^{L-1}\rangle]}}$. \textbf{Loss function} $l(y, \hat{y})$: squared loss; $\frac{1}{2}(y - \hat{y})^2$, cross-entropy loss; $-y \log \hat{y} - (1-y)\log(1-\hat{y})$.  \textbf{Backpropagation} $J_{ij}^l=\frac{\partial x_i^l}{\partial x_j^{l-1}}=w_{ij}\sigma'(w_i^Tx)$;$\frac{\partial x^l}{\partial x^{l-n}} = J^lJ^{l-1} \dotsm J^{l-n+1}$; $ \nabla_{x^l} l(y, \hat{y})^T = \nabla_{y} l(y, \hat{y})^TJ^lJ^{l-1} \dotsm J^{l-n+1}$;
 \break$ \frac{\partial l(y, \hat{y})}{\partial w_{ij}^l} = \frac{\partial l(y, \hat{y})}{\partial x_{i}^l} \frac{\partial x_i^l}{\partial w_{ij}^l}$; $\frac{\partial x_i^l}{\partial w_{ij}^l} = \sigma'({w_i^l}^Tx^{l-1})x_j^{l-1}$
 
 \subsection{Convolutional Neural Networks for Images}
 $\mathbf{(n,m)}$: pixel coords. \hspace{5pt} $\mathbf{x}$: image \hspace{5pt} $\mathbf{w}$: weights \hspace{5pt} $\mathbf{c}$: channels
 \begin{compactdesc}
-\item[Convolution]: $F_{n,m}(\mathbf{x};\mathbf{w}) = \sigma(\sum_{1}^c{(b + \sum_{k,l=-2}^2{w_{k,l}x_{n+k,m+l}})})$ 
-\item[Act. func.] $ReLU(F(\mathbf{x};\mathbf{w}))_{n,m} = max(0, F_{n,m}(\mathbf{x};\mathbf{w}))$
-\item[Pooling]: $max_{-2 < i,j <2}~(ReLU(F(\mathbf{x};\mathbf{w}))_{n+i,m+j})$
+\item[Convolution:] $F_{n,m}(\mathbf{x};\mathbf{w}) = \sigma(\sum_{1}^c{(b + \sum_{k,l=-2}^2{w_{k,l}x_{n+k,m+l}})})$ 
+\item[Act. func:] $\sigma = ReLU(F(\mathbf{x};\mathbf{w}))_{n,m} = max(0, F_{n,m}(\mathbf{x};\mathbf{w}))$
+\item[Pooling:] $max_{-2 < i,j <2}~(ReLU(F(\mathbf{x};\mathbf{w}))_{n+i,m+j})$
 \end{compactdesc}
 
 \section{Optimization}
@@ -339,23 +333,24 @@ Minimize  $f(\mathbf{x})$ s.t. $g_i(\mathbf{x}) \leq 0,\ i = 1, .., m$ (\textbf{
 \end{compactdesc}
 
 \subsection{Convex Optimization}
-$f : \mathbb{R}^D \rightarrow \mathbb{R}$ is convex, if $dom\ f$ is a convex set, and if $\forall \mathbf{x}, \mathbf{y} \in dom\ f$, and for $0 \leq \alpha \leq 1$: $f(\alpha \mathbf{x} + (1 - \alpha)\mathbf{y}) \leq \alpha f(\mathbf{x}) + (1-\alpha)f(\mathbf{y})$. local=global min, \textbf{Convergence}: all descent methods converge; $f(\mathbf{x}^{(t)}) - f(\mathbf{x}^*) \le \frac{c}{t}$.
+$f : \mathbb{R}^D \rightarrow \mathbb{R}$ is convex, if $epi\ f$ is a convex set, and if $\forall \mathbf{x}, \mathbf{y} \in dom\ f$, and for $0 \leq \alpha \leq 1$: $f(\alpha \mathbf{x} + (1 - \alpha)\mathbf{y}) \leq \alpha f(\mathbf{x}) + (1-\alpha)f(\mathbf{y})$. local=global min, \textbf{Convergence}: all descent methods converge; $f(\mathbf{x}^{(t)}) - f(\mathbf{x}^*) \le \frac{c}{t}$.
 
 \section{Sparse Coding}
 
 \subsection{Orthogonal Basis}
-For $\mathbf{x}$ and orthogonal $\mathbf{U}$ compute $\mathbf{z} = \mathbf{U}^\top \mathbf{x} $. Approx $ \mathbf{\hat{x}} = \mathbf{U\hat{z}}$, $\hat{z}_i = z_i$ if $ \lvert z_i \rvert > \epsilon$ else 0.
+Sparse representation $\mathbf{z} = \mathbf{U}^\top \mathbf{x} $. Approx $ \mathbf{\hat{x}} = \mathbf{U\hat{z}}$, $\hat{z}_i = z_i$ if $ \lvert z_i \rvert > \epsilon$ else 0.
 \textbf{Reconstruction Error}: $\|\mathbf{x}-\mathbf{\hat{x}}\|^2$ and sparsity of $\hat{z}$.
 \textbf{Choice of basis depends on signal}: fourier for global, wavelet for local and PCA basis for given $\Sigma$.
+\textbf{Haar Wavelets}: $\mathbf{U}=\mathbf{W}\mathbf{S}$, $\mathbf{\hat{x}} = z_1\mathbf{w}_0 + z_2\mathbf{w}(x) + z_3\mathbf{w}(2x) + z_4\mathbf{w}(2x-1)$
 
 \subsection{Overcomplete Basis}
-$\mathbf{U} \in \mathbb{R}^{D \times  L}$ for \# atoms $ = L > D = \mathsf{dim}\text{(data)}$. Can't invert $U^T$, decoding $\rightarrow$ add constraint $\mathbf{z}^\star \in \argmin_\mathbf{z} \lVert \mathbf{z} \rVert_0$ s.t. $\mathbf{x} = \mathbf{Uz}$. NP-hard $\rightarrow$ approximate with 1-norm (convex) or with M. Pursuit.
+$\mathbf{U} \in \mathbb{R}^{D \times L}$ for \# atoms $ = L > D = \mathsf{dim}$. Can't invert $U$, decoding $\rightarrow$ add constraint $\mathbf{z}^\star \in \argmin_\mathbf{z} \lVert \mathbf{z} \rVert_0$ s.t. $\mathbf{x} = \mathbf{Uz}$. NP-hard $\rightarrow$ approximate with 1-norm (convex) or with M. Pursuit.
 
 \textbf{Coherence}
 \begin{inparaitem}[\color{red}\textbullet]
 	\item $m(\mathbf{U}) = \max_{i,j:\, i \neq j} | \mathbf{u}_i^\top \mathbf{u}_j |$
-	\item $m(\mathbf{B}) = 0$ if $\mathbf{B}$ orthogonal matrix
-	\item $m([\mathbf{B}, \mathbf{u}]) \geq \frac{1}{\sqrt{D}}$ if atom $\mathbf{u}$ is added to orthogonal basis $\mathbf{B}$.
+	\item $m(\mathbf{B}) = 0$ if $\mathbf{B}$ orthogonal
+	\item $m([\mathbf{B}, \mathbf{u}]) \geq \frac{1}{\sqrt{D}}$ if atom $\mathbf{u}$ is added to orthogonal basis $\mathbf{B}$.  To min coherence max angle btw. atoms. Rotate $\mathbf{x}$ in 2D, $\mathbf{x}_1' = \cos \theta ~\mathbf{x}_1 - \sin \theta ~\mathbf{x}_2$; $\mathbf{x}_2' = \sin \theta ~\mathbf{x}_1 + \cos \theta ~\mathbf{x}_2$
 \end{inparaitem}
 
 \textbf{Matching Pursuit (MP)}
